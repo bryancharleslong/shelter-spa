@@ -181,10 +181,10 @@ exports.default = Pets;
 
 function Pets(pets, cages) {
   return "\n        <ul>\n            ".concat(pets.map(function (pet) {
-    return "\n                    <li>\n                        <h3>".concat(pet.petName, "</h3>\n                    </li>\n                        ");
-  }).join(''), "\n        </ul>\n        <section class='add-pet'>\n            <input class='add-pet__petName' type='text' placeholder='Pet Name'>\n            <a> Cage: </a>\n            <select class='add-pet__cageName'>\n            ").concat(cages.map(function (cage) {
+    return "\n                <li>\n                    <h3>".concat(pet.petName, "</h3>\n                </li>\n                ");
+  }).join(''), "\n        </ul>\n        <section class='add-pet'>\n        <input class='add-pet__petName' type='text' placeholder='Pet Name'>\n        <a> Cage: </a>\n        <select class='add-pet__cageName'>\n            ").concat(cages.map(function (cage) {
     return "\n                <option value=".concat(cage.id, ">").concat(cage.cageName, "</option>\n                ");
-  }), "\n            </select>\n            <button class='add-pet__submit'>Add Pet</button>\n\n        </section>\n    ");
+  }), "\n        </select>\n        <button class='add-pet__submit'>Add Pet</button>\n\n        </section>\n    ");
 }
 },{}],"js/api/api-actions.js":[function(require,module,exports) {
 "use strict";
@@ -346,7 +346,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58012" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63484" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
