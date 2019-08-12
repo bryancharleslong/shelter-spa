@@ -34,7 +34,6 @@
 # Node
 ######################
 /node/
-/dist/
 node_tmp/
 node_modules/
 npm-debug.log.*
@@ -125,6 +124,8 @@ Desktop.ini
 /bin/
 /deploy/
 .cache/
+/pet-shelter-frontend/dist/
+#/pet-shelter-api/bin/
 ######################
 # Logs
 ######################

@@ -32,7 +32,7 @@ public class Populator implements CommandLineRunner {
 		
 		Pet puppyCat = new Pet("Puppycat", cageA);
 		Pet merv = new Pet("Merv", cageA);
-		Pet phideax = new Pet("Phideax", cageB);
+		Pet phideax = new Pet("Phideax", cageC);
 		petRepo.save(puppyCat);
 		petRepo.save(phideax);
 		petRepo.save(merv);
