@@ -3,8 +3,8 @@ export default function Pets(pets, cages) {
         <ul>
             ${pets.map(pet => {
                 return `
-                <li>
-                    <h3>${pet.petName}</h3>
+                <li class='pet-li' petId=${pet.id}>
+                    <h3 class='pet-name'>${pet.petName}</h3>
                 </li>
                 `;
             }).join('')}

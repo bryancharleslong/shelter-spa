@@ -4,6 +4,7 @@ import Home from './components/Home'
 import Cages from './components/Cages'
 import Pets from './components/Pets'
 import apiActions from './api/api-actions';
+import '../css/styles.css';
 main()
 
 function main() {
@@ -24,29 +25,29 @@ function footer() {
 function navHome() {
     const homeButton = document.querySelector('.nav__home');
     homeButton.addEventListener('click', function () {
-        document.querySelector('#app').innerHTML = Home();
+        getAppContext().innerHTML = Home();
     })
+    getAppContext().innerHTML = Home();
 }
 function navCages() {
     const cagesButton = document.querySelector('.nav__cages');
     //get request
     cagesButton.addEventListener('click', function () {
         apiActions.getRequest('http://localhost:8080/cages', cages => {
-            document.querySelector('#app').innerHTML = Cages(cages);
+            getAppContext().innerHTML = Cages(cages);
         })
     })
     //post request
-    const app = document.querySelector('#app');
-    app.addEventListener('click', function () {
+    getAppContext().addEventListener('click', function () {
         if (event.target.classList.contains('add-cage__submit')) {
             apiActions.postRequest('http://localhost:8080/cages/add-cage', {
-            }, (cages) => app.innerHTML = Cages(cages))
+            }, (cages) => getAppContext().innerHTML = Cages(cages))
         }
     })
-    app.addEventListener('click', function(){
+    getAppContext().addEventListener('click', function () {
         if (event.target.classList.contains('remove-cage__submit')) {
             apiActions.postRequest('http://localhost:8080/cages/remove-cage', {
-            }, (cages) => app.innerHTML = Cages(cages))
+            }, (cages) => getAppContext().innerHTML = Cages(cages))
         }
     })
 
@@ -56,13 +57,18 @@ function navPets() {
     petsButton.addEventListener('click', function () {
         apiActions.getRequest('http://localhost:8080/cages', cages => {
             apiActions.getRequest('http://localhost:8080/pets', pets => {
-                document.querySelector('#app').innerHTML = Pets(pets, cages);
+                getAppContext().innerHTML = Pets(pets, cages);
+                //after app content is loaded, start hover listener
+                getAppContext().querySelector("ul").addEventListener('mouseleave', function () {
+                    var oldButton = document.querySelector('#delete-button');
+                        if (oldButton != null) {
+                            oldButton.remove();
+                        }
+                })
             })
         })
     })
-
-    const app = document.querySelector('#app');
-    app.addEventListener('click', function () {
+    getAppContext().addEventListener('click', function (event) {
         if (event.target.classList.contains('add-pet__submit')) {
             const petName = event.target.parentElement.querySelector('.add-pet__petName').value;
             const cageId = event.target.parentElement.querySelector('.add-pet__cageName').value;
@@ -70,9 +76,34 @@ function navPets() {
                 apiActions.postRequest('http://localhost:8080/pets/add-pet', {
                     petName: petName,
                     cageId: cageId
-                }, (pets) => app.innerHTML = Pets(pets, cages))
+                }, (pets) => getAppContext().innerHTML = Pets(pets, cages))
             })
         }
     })
+    
+    //delete a pet: delete button appears on hover
+    getAppContext().addEventListener('mouseover', function () {
+        if (event.target.classList.contains('pet-name')) {
+            var oldButton = document.querySelector('#delete-button');
+            if (oldButton != null) {
+                oldButton.remove();
+            }
+            var deleteButton = document.createElement('button');
+            deleteButton.id = 'delete-button';
+            deleteButton.innerHTML = 'Adopt out pet';
+            event.target.parentElement.appendChild(deleteButton);
+            deleteButton.addEventListener('click', function () {
+                var petId = event.target.parentElement.getAttribute('petId');
+                apiActions.getRequest('http://localhost:8080/cages', cages => {
+                    apiActions.postRequest('http://localhost:8080/pets/remove-pet', {
+                       petId: petId
+                    }, (pets) => getAppContext().innerHTML = Pets(pets, cages))
+                })
+            })
+        }
+    })
+}
 
+function getAppContext() {
+    return document.querySelector('#app');
 }

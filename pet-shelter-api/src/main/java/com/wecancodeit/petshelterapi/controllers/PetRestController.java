@@ -44,8 +44,17 @@ public class PetRestController {
 		String petName = newPet.getString("petName");
 		Long cageId = newPet.getLong("cageId");
 		Cage cage = cageRepo.findById(cageId).get();
-		petRepo.save(new Pet(petName, cage));
+		if (petName.length() > 0) {
+			petRepo.save(new Pet(petName, cage));
+		}
 		return (Collection<Pet>) petRepo.findAll();
 	}
 
+	@PostMapping("/remove-pet")
+	public Collection<Pet> removePet(@RequestBody String body) throws JSONException {
+		JSONObject pet = new JSONObject(body);
+		Long petId = pet.getLong("petId");
+		petRepo.deleteById(petId);
+		return (Collection<Pet>) petRepo.findAll();
+	}
 }

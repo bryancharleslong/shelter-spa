@@ -148,7 +148,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = Home;
 
 function Home() {
-  return "\n        <h1>Welcome to Pet Shelter</h1>\n        <p>Thanks for volunteering!</p>\n    ";
+  return "\n        <div>\n            <h1>Welcome to Pet Shelter</h1>\n            <p>Thanks for volunteering!</p>\n        </div>\n    ";
 }
 },{}],"js/components/Cages.js":[function(require,module,exports) {
 "use strict";
@@ -181,7 +181,7 @@ exports.default = Pets;
 
 function Pets(pets, cages) {
   return "\n        <ul>\n            ".concat(pets.map(function (pet) {
-    return "\n                <li>\n                    <h3>".concat(pet.petName, "</h3>\n                </li>\n                ");
+    return "\n                <li class='pet-li' petId=".concat(pet.id, ">\n                    <h3 class='pet-name'>").concat(pet.petName, "</h3>\n                </li>\n                ");
   }).join(''), "\n        </ul>\n        <section class='add-pet'>\n        <input class='add-pet__petName' type='text' placeholder='Pet Name'>\n        <a> Cage: </a>\n        <select class='add-pet__cageName'>\n            ").concat(cages.map(function (cage) {
     return "\n                <option value=".concat(cage.id, ">").concat(cage.cageName, "</option>\n                ");
   }), "\n        </select>\n        <button class='add-pet__submit'>Add Pet</button>\n\n        </section>\n    ");
@@ -222,7 +222,79 @@ var _default = {
   postRequest: postRequest
 };
 exports.default = _default;
-},{}],"js/app.js":[function(require,module,exports) {
+},{}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"css/styles.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
 var _Header = _interopRequireDefault(require("./components/Header"));
@@ -236,6 +308,8 @@ var _Cages = _interopRequireDefault(require("./components/Cages"));
 var _Pets = _interopRequireDefault(require("./components/Pets"));
 
 var _apiActions = _interopRequireDefault(require("./api/api-actions"));
+
+require("../css/styles.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -262,8 +336,9 @@ function footer() {
 function navHome() {
   var homeButton = document.querySelector('.nav__home');
   homeButton.addEventListener('click', function () {
-    document.querySelector('#app').innerHTML = (0, _Home.default)();
+    getAppContext().innerHTML = (0, _Home.default)();
   });
+  getAppContext().innerHTML = (0, _Home.default)();
 }
 
 function navCages() {
@@ -271,22 +346,21 @@ function navCages() {
 
   cagesButton.addEventListener('click', function () {
     _apiActions.default.getRequest('http://localhost:8080/cages', function (cages) {
-      document.querySelector('#app').innerHTML = (0, _Cages.default)(cages);
+      getAppContext().innerHTML = (0, _Cages.default)(cages);
     });
   }); //post request
 
-  var app = document.querySelector('#app');
-  app.addEventListener('click', function () {
+  getAppContext().addEventListener('click', function () {
     if (event.target.classList.contains('add-cage__submit')) {
       _apiActions.default.postRequest('http://localhost:8080/cages/add-cage', {}, function (cages) {
-        return app.innerHTML = (0, _Cages.default)(cages);
+        return getAppContext().innerHTML = (0, _Cages.default)(cages);
       });
     }
   });
-  app.addEventListener('click', function () {
+  getAppContext().addEventListener('click', function () {
     if (event.target.classList.contains('remove-cage__submit')) {
       _apiActions.default.postRequest('http://localhost:8080/cages/remove-cage', {}, function (cages) {
-        return app.innerHTML = (0, _Cages.default)(cages);
+        return getAppContext().innerHTML = (0, _Cages.default)(cages);
       });
     }
   });
@@ -297,12 +371,19 @@ function navPets() {
   petsButton.addEventListener('click', function () {
     _apiActions.default.getRequest('http://localhost:8080/cages', function (cages) {
       _apiActions.default.getRequest('http://localhost:8080/pets', function (pets) {
-        document.querySelector('#app').innerHTML = (0, _Pets.default)(pets, cages);
+        getAppContext().innerHTML = (0, _Pets.default)(pets, cages); //after app content is loaded, start hover listener
+
+        getAppContext().querySelector("ul").addEventListener('mouseleave', function () {
+          var oldButton = document.querySelector('#delete-button');
+
+          if (oldButton != null) {
+            oldButton.remove();
+          }
+        });
       });
     });
   });
-  var app = document.querySelector('#app');
-  app.addEventListener('click', function () {
+  getAppContext().addEventListener('click', function (event) {
     if (event.target.classList.contains('add-pet__submit')) {
       var petName = event.target.parentElement.querySelector('.add-pet__petName').value;
       var cageId = event.target.parentElement.querySelector('.add-pet__cageName').value;
@@ -312,13 +393,43 @@ function navPets() {
           petName: petName,
           cageId: cageId
         }, function (pets) {
-          return app.innerHTML = (0, _Pets.default)(pets, cages);
+          return getAppContext().innerHTML = (0, _Pets.default)(pets, cages);
+        });
+      });
+    }
+  }); //delete a pet: delete button appears on hover
+
+  getAppContext().addEventListener('mouseover', function () {
+    if (event.target.classList.contains('pet-name')) {
+      var oldButton = document.querySelector('#delete-button');
+
+      if (oldButton != null) {
+        oldButton.remove();
+      }
+
+      var deleteButton = document.createElement('button');
+      deleteButton.id = 'delete-button';
+      deleteButton.innerHTML = 'Adopt out pet';
+      event.target.parentElement.appendChild(deleteButton);
+      deleteButton.addEventListener('click', function () {
+        var petId = event.target.parentElement.getAttribute('petId');
+
+        _apiActions.default.getRequest('http://localhost:8080/cages', function (cages) {
+          _apiActions.default.postRequest('http://localhost:8080/pets/remove-pet', {
+            petId: petId
+          }, function (pets) {
+            return getAppContext().innerHTML = (0, _Pets.default)(pets, cages);
+          });
         });
       });
     }
   });
 }
-},{"./components/Header":"js/components/Header.js","./components/Footer":"js/components/Footer.js","./components/Home":"js/components/Home.js","./components/Cages":"js/components/Cages.js","./components/Pets":"js/components/Pets.js","./api/api-actions":"js/api/api-actions.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function getAppContext() {
+  return document.querySelector('#app');
+}
+},{"./components/Header":"js/components/Header.js","./components/Footer":"js/components/Footer.js","./components/Home":"js/components/Home.js","./components/Cages":"js/components/Cages.js","./components/Pets":"js/components/Pets.js","./api/api-actions":"js/api/api-actions.js","../css/styles.css":"css/styles.css"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -346,7 +457,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63484" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64832" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
