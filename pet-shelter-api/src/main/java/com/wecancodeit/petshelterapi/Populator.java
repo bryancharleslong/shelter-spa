@@ -25,6 +25,7 @@ public class Populator implements CommandLineRunner {
 		Cage cageB = new Cage("B");
 		Cage cageC = new Cage("C");
 		Cage cageD = new Cage("D");
+		
 		cageRepo.save(cageA);
 		cageRepo.save(cageB);
 		cageRepo.save(cageC);
@@ -33,6 +34,7 @@ public class Populator implements CommandLineRunner {
 		Pet puppyCat = new Pet("Puppycat", cageA);
 		Pet merv = new Pet("Merv", cageA);
 		Pet phideax = new Pet("Phideax", cageC);
+		
 		petRepo.save(puppyCat);
 		petRepo.save(phideax);
 		petRepo.save(merv);

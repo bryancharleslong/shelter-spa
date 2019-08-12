@@ -125,7 +125,7 @@ Desktop.ini
 /deploy/
 .cache/
 /pet-shelter-frontend/dist/
-#/pet-shelter-api/bin/
+/pet-shelter-api/bin/
 ######################
 # Logs
 ######################
