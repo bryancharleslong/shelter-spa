@@ -5,7 +5,8 @@ import Cages from './components/Cages'
 import Pets from './components/Pets'
 import apiActions from './api/api-actions';
 import '../css/styles.css';
-var apiPath = "http://petshelterapi-env.3q9aiabym9.us-east-2.elasticbeanstalk.com";
+//var apiPath = 'http://localhost:5000';
+var apiPath = 'http://localhost:5000';
 main()
 
 function main() {
